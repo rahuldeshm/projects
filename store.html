@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Store Name</title>
+    </head>
+    <body>
+        <div>
+        <form id="form">
+            <label for="item">Item</label>
+            <input type="text" id="item" name="item">
+            <label for="discription">Discription</label>
+            <input type="text" id="discription" name="discription">
+            <label for="price">Price</label>
+            <input type="text" id="price" name="price">
+            <label for="quantity">Quantity</label>
+            <input type="text" id="quantity" name="quantity">
+            <input type="button" id="button" value="Add Item">
+        </form>
+        </div>
+        <div id="items">
+            <ul></ul>
+        </div>
+        <script language="JavaScript" type="text/javascript" >
+            const additem = document.getElementById("button");
+            additem.addEventListener("click",saveitem);
+            function saveitem(e){
+                e.preventDefault();
+                const item = document.getElementById("item").value;
+                const discription = document.getElementById("discription").value;
+                const price = document.getElementById("price").value;
+                const quantity = document.getElementById("quantity").value;
+                const obj={
+                    "item":item,
+                    "discription":discription,
+                    "price":price,
+                    "quantity":quantity
+                }
+                axios.post("https://crudcrud.com/api/988b3ed5647a4db9a5ef0b4365def96b/AppointmentData",obj)
+                    .then(res =>{
+                      showOnScreen(res.data);
+                      cleareditdata()
+                    })
+                    .catch((err)=>{
+                      console.log(err);
+                    })
+
+            }
+            
+            document.addEventListener("DOMContentLoaded",()=>{
+                axios.get("https://crudcrud.com/api/988b3ed5647a4db9a5ef0b4365def96b/AppointmentData")
+                  .then((response)=>{
+                    for(var i=0; i<response.data.length; i++){
+                      showOnScreen(response.data[i]);
+                    }
+                  })
+                  .catch(err=>console.log(err))
+            })
+            function showOnScreen(obj){
+                const parentEme=document.getElementById('items')
+                const childEle=document.createElement('ul')
+                childEle.textContent=obj.item +'  -   '+ obj.discription +'  -  '+obj.price+' - '+obj.quantity
+                const buy1=document.createElement('input')
+                const buy2=document.createElement('input')
+                const buy3=document.createElement('input')
+                buy1.type="button"
+                buy1.id=obj._id;
+                buy1.value='BUY1'
+                buy1.onclick =() => {
+                    updateobj(obj,1)
+                    parentEme.removeChild(childEle)
+
+                } 
+                childEle.appendChild(buy1)
+                buy2.type="button"
+                buy2.id=obj._id
+                buy2.value='BUY2'
+                buy2.onclick =() => {
+                    updateobj(obj,2)
+                    parentEme.removeChild(childEle)
+                } 
+                childEle.appendChild(buy2)
+                buy3.type="button"
+                buy3.id=obj._id
+                buy3.value='BUY3'
+                buy3.onclick =() => {
+                    updateobj(obj,3)
+                    parentEme.removeChild(childEle)
+                } 
+                childEle.appendChild(buy3)
+                parentEme.appendChild(childEle)
+            }
+            function cleareditdata(){
+                document.getElementById('item').value=""
+                document.getElementById('discription').value=""
+                document.getElementById('price').value=""
+                document.getElementById('quantity').value=""
+            }
+            function updateobj(obj,num){
+                obj.quantity=obj.quantity-num
+                let reqid = obj._id
+                delete obj._id
+                axios.put(`https://crudcrud.com/api/988b3ed5647a4db9a5ef0b4365def96b/AppointmentData/${reqid}`,obj)
+                    .then(res =>{
+                        showOnScreen(obj);
+                        obj._id=reqid
+                        
+                    })
+                    .catch((err)=>{
+                        console.log(err);
+                    })
+                    
+                   
+            }
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+    </body>
+</html>
